@@ -11,3 +11,5 @@ para subir o arquivo da maquina para o github faça os seguintes comandos:
 	Git add --all    monta um pacote de todas as alterações feitas(Pesquisar para subir um arquivo especifico)
 	git commit -m "Mensagem do commit"    Confirma as alterações e prepara o arquivo para upload no Github
 	git push    faz upload das modificações para o GitHub
+	
+Comando git pull pega os arquivos do github e envia para a pasta local
