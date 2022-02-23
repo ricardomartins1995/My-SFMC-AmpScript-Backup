@@ -5,3 +5,9 @@ cd Caminho da Pasta
 
 Depois dar o comando git init para iniciar o repositorio git na pasta selecionada
 
+Comando git clone traz o repositorio do github pra minha pasta local
+
+para subir o arquivo da maquina para o github faça os seguintes comandos:
+	Git add --all    monta um pacote de todas as alterações feitas(Pesquisar para subir um arquivo especifico)
+	git commit -m "Mensagem do commit"    Confirma as alterações e prepara o arquivo para upload no Github
+	git push    faz upload das modificações para o GitHub
