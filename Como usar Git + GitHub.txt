@@ -13,3 +13,7 @@ para subir o arquivo da maquina para o github faça os seguintes comandos:
 	git push    faz upload das modificações para o GitHub
 	
 Comando git pull pega os arquivos do github e envia para a pasta local
+
+git checkout verifica qual branch vc esta trabalhando
+
+git branch nomeDaBranch cria uma nova branch
