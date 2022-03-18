@@ -1,0 +1,29 @@
+<!--Chamada no email-->
+%%[
+ SET @E = emailaddr
+ SET @EM = Base64Encode(@E)
+ SET @BTN1 = CONCAT('https://cloud.email-agilidade.pt/agilcare-oferta-3-meses?', 'EM=', @EM)
+]%%
+
+<!--Link Botão no email-->
+%%=RedirectTo(@BTN1)=%%
+
+
+<!--Landing Page-->
+<script runat="server">
+    Platform.Load("core", "1");
+    HTTPHeader.Remove("Cache-Control");
+    HTTPHeader.SetValue("Cache-Control", "no-store");
+    try {
+</script>
+    %%[
+      VAR @DE, @EMAIL
+      SET @EML = RequestParameter('EM')
+      SET @EMAIL = Base64Decode(@EML)
+      SET @DE = LookupRows('TB01_JORNADA_3MESESOFERTA_AGILCARE_DISPARO', 'Email', @EMAIL)
+      IF ROWCOUNT (@DE) > 0 THEN
+        SET @ROW = ROW(@DE, 1)
+        SET @NOME = FIELD(@ROW, 'Nome')
+        SET @TEL = FIELD(@ROW, 'Telemovel')
+      ENDIF
+    ]%%

@@ -1,0 +1,10 @@
+Select TOP 99999 COUNT(A.Email) AS CONTADOR, DATEPART(MONTH, A.CreatedDate) as MES
+From TB00_LEADS_CH2 A with(nolock)
+where
+    DATEPART(YEAR, A.CreatedDate) = 2021
+GROUP BY
+    DATEPART(MONTH, A.CreatedDate)
+ORDER BY
+    DATEPART(MONTH, A.CreatedDate) asc
+
+

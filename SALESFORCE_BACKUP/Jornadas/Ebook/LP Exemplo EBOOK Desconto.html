@@ -1,0 +1,174 @@
+<script runat="server">
+ Platform.Load("core","1");
+ try {
+</script>
+%%[
+
+var @Id, @firstName, @lastName, @email, @phone, @subscriberRows, @subscriberRow, @company, @ptype, @pstyle, @URL_Imagem, @URL_Link, @IDForm, @de, @row
+set @Id = RequestParameter("ck")
+Set @IDForm = RequestParameter("IDForm")
+set @currentTime  = Now()
+Set @URL_Imagem = Lookup('Tb00_Form_EbookV2','URL_Imagem', 'IDForm', @IDForm)
+Set @URL_Link = Lookup('Tb00_Form_EbookV2','URL_Link', 'IDForm', @IDForm)
+Set @titulo = Lookup('Tb00_Form_EbookV2','Titulo', 'IDForm', @IDForm)
+Set @idsfmc = Lookup('TB00_Brabbu_Leads', 'ID_MKT_CLOUD__c', 'Id', @Id)
+
+  if RequestParameter("submitted") != true then
+
+    set @subscriberRows = RetrieveSalesforceObjects(
+       "Lead",
+       "FirstName,LastName,Email,Phone,Company,Project_Style__c,Project_Type__c, RespForm__c",
+       "Id", "=", @Id )
+
+    set @subscriberRow = Row(@subscriberRows, 1)
+    set @firstName = Field(@subscriberRow, "FirstName")
+    set @lastName = Field(@subscriberRow, "LastName")
+    set @email = Field(@subscriberRow, "Email")
+    set @phone = Field(@subscriberRow, "Phone")
+    set @company = Field(@subscriberRow, "Company")
+    set @ptype = Field(@subscriberRow, "Project_Type__c")
+    set @pstyle = Field(@subscriberRow, "Project_Style__c")
+    set @RespForm = Field(@subscriberRow, "RespForm__c")
+
+  else
+
+    var @updateRecord
+    set @name = RequestParameter("name")
+    set @lastName = RequestParameter("lastname")
+    set @email = RequestParameter("email")
+    set @phone = RequestParameter("phone")
+    set @company = RequestParameter("company")
+    set @ptype = RequestParameter("ptype")
+    set @pstyle = RequestParameter("pstyle")
+    set @RespForm = RequestParameter("RespForm")
+
+    set @updateRecord = UpdateSingleSalesforceObject(
+        "Lead",@Id,
+        "FirstName", @firstname,
+        "LastName", @lastName,
+        "Email", @email,
+        "Phone", @phone,
+        "Company", @company,
+        "Project_Type__c", @ptype,
+        "Project_Style__c", @pstyle,
+        "RespForm__c", @RespForm
+       )
+     UpsertDE("Tb00_Desconto_Jornada_EbookV2", 1, "ID_MKT_CLOUD__c", @idsfmc, "Email", @email, "Data_Form", @currentTime)
+     UpdateDE("TB00_Brabbu_Leads", 1, 'ID_MKT_CLOUD__c', @idsfmc, "Tipo_Pedido", @IDForm)
+
+  endif
+
+  ]%%
+
+  
+
+
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+
+
+%%[ if @updateRecord == 1 then 
+    redirect(@URL_Link)
+]%%
+%%[ elseif @updateRecord == 0 then ]%%
+  <div class="alert alert-danger" role="alert">
+    <div style="margin: 0 auto; width: 50%;">Não foi possível atualizar seu cadastro, tente novamente mais tarde!</div>
+  </div>
+%%[ endif ]%%
+<div class="container-fluid">
+  <div class="flex-row">
+    <div class="d-flex justify-content-center">
+    <img src="http://image.concierge.brabbu.com/lib/fe2f117075640475761c78/m/1/a0e06584-dbe9-4681-bca1-47c775e3bb93.png" class="responsive">
+      </div>
+  </div>
+<div class="row">
+  <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-5 text-right" style="margin-top:10px;">
+    <img src="%%=v(@URL_Imagem)=%%" class="img-fluid" alt="Responsive image">
+
+  </div>
+  
+   <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 pt-5">
+    <div class="row no-gutters" id="form-download-book">
+     <div class="col-12" style="padding-left:15px;">
+      <h4>%%=v(@titulo)=%%</h4>
+     </div>
+     <form method="POST" action="%%=RequestParameter('PAGEURL')=%%">
+      <div class="col-12 mb-3">
+       <label class="formLabel">Your first name</label>
+       <input class="form-control form-control-sm" type="text" name="name" v-model="name_book" value="%%=v(@firstName)=%%" placeholder="" style="border-radius:0" required="">
+      </div>
+      <div class="col-12 mb-3">
+       <label class="formLabel">Your last name</label>
+       <input class="form-control form-control-sm" type="text" name="name" v-model="name_book" value="%%=v(@lastName)=%%" placeholder="" style="border-radius:0" required="">
+      </div>
+      <div class="col-12 mb-3">
+       <label class="formLabel">Your e-mail address</label>
+       <input class="form-control form-control-sm" type="email" name="email" placeholder="" v-model="email_book" value="%%=v(@email)=%%" style="border-radius:0" required="">
+      </div>
+      <div>
+       <div>
+        <div class="col-6 mb-3" style="padding-right:10px">
+         <label class="formLabel">Phone number</label>
+         <input class="form-control form-control-sm" name="phone" type="text" v-model="phone_book" placeholder="" value="%%=v(@phone)=%%" style="border-radius:0" required="">
+       
+         <label class="formLabel">Company</label>
+         <input class="form-control form-control-sm" name="company" type="text" v-model="company_book" placeholder="" value="%%=v(@company)=%%" style="border-radius:0" required="">
+        </div>
+        <div class="col-6 mb-3">
+           <label class="formLabel">Project Type</label>
+           <select name="ptype" id="formType" class="form-control" v-model="type_book" required="">
+                  <option selected="" disabled="">Select an option ...</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Commercial">Commercial</option>
+                  <option value="Hospitality">Hospitality</option>
+                  <option value="Staging">Staging</option>
+                 </select>
+          </div>
+         
+         <div class="col-12 d-flex align-items-end">
+                 <div class="row">
+            <div class="col-12">
+             <h4 class="mb-4">What is your favourite style</h4>
+            </div>
+          
+        <div class="col-6 col-md-3 mb-2 text-center">
+     <img src="https://www.brabbu.com/images/2020-book/Brabbu-Book-2020-Contemporary-Style.png" class="img-thumbnail"> 
+ <input type="radio" id="group2" name="pstyle" value="Contemporary">
+      </div>
+     <div class="col-6 col-md-3 mb-2 text-center">
+          <img src="https://www.brabbu.com/images/2020-book/Brabbu-Book-2020-Mid-Century-Style.png" class="img-thumbnail">
+        <input type="radio" id="group3" name="pstyle" class="choose_cover mt-1" v-model="choose_cover" value="Mid-Century">
+        </div>
+       <div class="col-6 col-md-3 mb-2 text-center">
+            <img src="https://www.brabbu.com/images/2020-book/Brabbu-Book-2020-Modern-Style.png" class="img-thumbnail">
+      <input type="radio" id="group4" name="pstyle" class="choose_cover mt-1" v-model="choose_cover" value="Modern Classic">
+      </div>
+
+          </div>
+          </div>
+        
+       </div>
+      </div>
+      <input type="hidden" id="submitted" name="submitted" value="true">
+      <input type="hidden" id="RespForm" name="RespForm" value="true">
+
+        <div class="col-12">
+          <button type="submit" class="btnGetPriceNew btn w-75" id="btn-submit" style="margin-top: 10px;width:100%;background-color:black;border-radius: 0;"><span style="font-size:12px;text-transform:uppercase;color:white;">Download Book</span></button>
+        </div>
+     </form>
+    </div>
+   </div>
+  </div>
+  </div>
+<script runat="server">
+ }
+ catch (err) {
+  Write("Error Message: " + Stringify(err.message) + Stringify(err.description));
+ }
+</script>
+
