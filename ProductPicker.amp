@@ -1,0 +1,164 @@
+%%[
+    SET @PRODID1 = '4800101-257'
+    SET @PRODID2 = '805195-457'
+    SET @PRODID3 = '4975125-19'
+    SET @PRODID4 = '2004075-113'
+
+
+    SET @LOCALE = ''
+    IF EMPTY(@LOCALE) THEN
+        SET @LOCALE = AttributeValue('Locale')
+    ENDIF
+    IF EMPTY(@LOCALE) THEN
+        SET @LOCALE = AttributeValue('Locale__C')
+    ENDIF
+        SET @LOCALE = AttributeValue('LoyaltyMember__c:Consumer__r:Locale__C')
+    ENDIF
+    IF @LOCALE == '' THEN 
+        SET @LOCALE = 'de_AT'
+    ENDIF
+
+/*Start to get data for ProdID1*/
+    SET @DE1 = LookupOrderedRows("Product_Feed", 1, "lastModified DESC", "group_id", @PRODID1)
+    SET @RCOUNT1 = ROWCOUNT(@DE1)
+    IF @RCOUNT1 > 0 THEN
+        IF (@LOCALE == 'de_AT' or @locale == 'nl_BE' or @locale == 'de_CH' or @locale == 'de_DE' or @locale == 'da_DK' or @locale == 'es_ES' or @locale == 'fi_FI' 
+            or @locale == 'fr_FR' or @locale == 'it_IT' or @locale == 'nl_NL' or @locale == 'pt_PT' or @locale == 'sv_SE' or @locale == 'en_US') THEN
+            SET @ROW1 = ROW(@DE1, 1)
+            SET @PRODNAME1 = FIELD(@ROW1, Concat("lng:",@LOCALE,":name"))
+            SET @prodURL1 = FIELD(@ROW1, concat("lng:",@LOCALE,":url"))
+            SET @prodSKU1 = FIELD(@ROW1, "sku")
+            SET @prodRecoLink1 = REPLACE(@prodURL1, @prodSKU1, @PRODID1)
+            SET @prodRecoImage1 = FIELD(@ROW1, concat("lng:",@LOCALE,":image_url"))
+            IF EMPTY(@PRODNAME1) OR EMPTY(@prodRecoLink1) OR EMPTY(@prodRecoImage1) THEN
+                SET @ROW1 = ROW(@DE1, 1)
+                SET @PRODNAME1 = FIELD(@ROW1, "name")
+                SET @prodURL1 = FIELD(@ROW1, "url")
+                SET @prodSKU1 = FIELD(@ROW1, "sku")
+                SET @prodRecoLink1 = REPLACE(@prodURL1, @prodSKU1, @PRODID1)
+                SET @prodRecoImage1 = FIELD(@ROW1, "image_url")
+            ENDIF
+        ELSE
+            SET @ROW1 = ROW(@DE1, 1)
+            SET @PRODNAME1 = FIELD(@ROW1, "name")
+            SET @prodURL1 = FIELD(@ROW1, "url")
+            SET @prodSKU1 = FIELD(@ROW1, "sku")
+            SET @prodRecoLink1 = REPLACE(@prodURL1, @prodSKU1, @PRODID1)
+            SET @prodRecoImage1 = FIELD(@ROW1, "image_url")
+        ENDIF
+    ENDIF
+    
+ 
+
+/*Start to get data for ProdID2*/
+    SET @DE2 = LookupOrderedRows("Product_Feed", 1, "lastModified DESC", "group_id", @PRODID2)
+    SET @RCOUNT2 = ROWCOUNT(@DE2)
+    IF @RCOUNT2 > 0 THEN
+        IF (@LOCALE == 'de_AT' or @locale == 'nl_BE' or @locale == 'de_CH' or @locale == 'de_DE' or @locale == 'da_DK' or @locale == 'es_ES' or @locale == 'fi_FI' 
+            or @locale == 'fr_FR' or @locale == 'it_IT' or @locale == 'nl_NL' or @locale == 'pt_PT' or @locale == 'sv_SE' or @locale == 'en_US') THEN
+            SET @ROW2 = ROW(@DE2, 1)
+            SET @PRODNAME2 = FIELD(@ROW2, Concat("lng:",@LOCALE,":name"))
+            SET @prodURL2 = FIELD(@ROW2, concat("lng:",@LOCALE,":url"))
+            SET @prodSKU2 = FIELD(@ROW2, "sku")
+            SET @prodRecoLink2 = REPLACE(@prodURL2, @prodSKU2, @PRODID2)
+            SET @prodRecoImage2 = FIELD(@ROW2, concat("lng:",@LOCALE,":image_url"))
+            IF EMPTY(@PRODNAME2) OR EMPTY(@prodRecoLink2) OR EMPTY(@prodRecoImage2) THEN
+                SET @ROW2 = ROW(@DE2, 1)
+                SET @PRODNAME2 = FIELD(@ROW2, "name")
+                SET @prodURL2 = FIELD(@ROW2, "url")
+                SET @prodSKU2 = FIELD(@ROW2, "sku")
+                SET @prodRecoLink2 = REPLACE(@prodURL2, @prodSKU2, @PRODID2)
+                SET @prodRecoImage2 = FIELD(@ROW2, "image_url")
+            ENDIF
+        ELSE
+            SET @ROW2 = ROW(@DE2, 1)
+            SET @PRODNAME2 = FIELD(@ROW2, "name")
+            SET @prodURL2 = FIELD(@ROW2, "url")
+            SET @prodSKU2 = FIELD(@ROW2, "sku")
+            SET @prodRecoLink2 = REPLACE(@prodURL2, @prodSKU2, @PRODID2)
+            SET @prodRecoImage2 = FIELD(@ROW2, "image_url")
+        ENDIF
+    ENDIF
+
+/*Start to get data for ProdID3*/
+    SET @DE3 = LookupOrderedRows("Product_Feed", 1, "lastModified DESC", "group_id", @PRODID3)
+    SET @RCOUNT3 = ROWCOUNT(@DE3)
+    IF @RCOUNT3 > 0 THEN
+        IF (@LOCALE == 'de_AT' or @locale == 'nl_BE' or @locale == 'de_CH' or @locale == 'de_DE' or @locale == 'da_DK' or @locale == 'es_ES' or @locale == 'fi_FI' 
+            or @locale == 'fr_FR' or @locale == 'it_IT' or @locale == 'nl_NL' or @locale == 'pt_PT' or @locale == 'sv_SE' or @locale == 'en_US') THEN
+            SET @ROW3 = ROW(@DE3, 1)
+            SET @PRODNAME3 = FIELD(@ROW3, Concat("lng:",@LOCALE,":name"))
+            SET @prodURL3 = FIELD(@ROW3, concat("lng:",@LOCALE,":url"))
+            SET @prodSKU3 = FIELD(@ROW3, "sku")
+            SET @prodRecoLink3 = REPLACE(@prodURL3, @prodSKU3, @PRODID3)
+            SET @prodRecoImage3 = FIELD(@ROW3, concat("lng:",@LOCALE,":image_url"))
+            IF EMPTY(@PRODNAME3) OR EMPTY(@prodRecoLink3) OR EMPTY(@prodRecoImage3) THEN
+                SET @ROW3 = ROW(@DE3, 1)
+                SET @PRODNAME3 = FIELD(@ROW3, "name")
+                SET @prodURL3 = FIELD(@ROW3, "url")
+                SET @prodSKU3 = FIELD(@ROW3, "sku")
+                SET @prodRecoLink3 = REPLACE(@prodURL3, @prodSKU3, @PRODID3)
+                SET @prodRecoImage3 = FIELD(@ROW3, "image_url")
+            ENDIF
+        ELSE
+            SET @ROW3 = ROW(@DE3, 1)
+            SET @PRODNAME3 = FIELD(@ROW3, "name")
+            SET @prodURL3 = FIELD(@ROW3, "url")
+            SET @prodSKU3 = FIELD(@ROW3, "sku")
+            SET @prodRecoLink3 = REPLACE(@prodURL3, @prodSKU3, @PRODID3)
+            SET @prodRecoImage3 = FIELD(@ROW3, "image_url")
+        ENDIF
+    ENDIF
+
+/*Start to get data for ProdID4*/
+    SET @DE4 = LookupOrderedRows("Product_Feed", 1, "lastModified DESC", "group_id", @PRODID4)
+    SET @RCOUNT4 = ROWCOUNT(@DE4)
+    IF @RCOUNT4 > 0 THEN
+        IF (@LOCALE == 'de_AT' or @locale == 'nl_BE' or @locale == 'de_CH' or @locale == 'de_DE' or @locale == 'da_DK' or @locale == 'es_ES' or @locale == 'fi_FI' 
+            or @locale == 'fr_FR' or @locale == 'it_IT' or @locale == 'nl_NL' or @locale == 'pt_PT' or @locale == 'sv_SE' or @locale == 'en_US') THEN
+            SET @ROW4 = ROW(@DE4, 1)
+            SET @PRODNAME4 = FIELD(@ROW4, Concat("lng:",@LOCALE,":name"))
+            SET @prodURL4 = FIELD(@ROW4, concat("lng:",@LOCALE,":url"))
+            SET @prodSKU4 = FIELD(@ROW4, "sku")
+            SET @prodRecoLink4 = REPLACE(@prodURL4, @prodSKU4, @PRODID4)
+            SET @prodRecoImage4 = FIELD(@ROW4, concat("lng:",@LOCALE,":image_url"))
+            IF EMPTY(@PRODNAME4) OR EMPTY(@prodRecoLink4) OR EMPTY(@prodRecoImage4) THEN
+                SET @ROW4 = ROW(@DE4, 1)
+                SET @PRODNAME4 = FIELD(@ROW4, "name")
+                SET @prodURL4 = FIELD(@ROW4, "url")
+                SET @prodSKU4 = FIELD(@ROW4, "sku")
+                SET @prodRecoLink4 = REPLACE(@prodURL4, @prodSKU4, @PRODID4)
+                SET @prodRecoImage4 = FIELD(@ROW4, "image_url")
+            ENDIF
+        ELSE
+            SET @ROW4 = ROW(@DE4, 1)
+            SET @PRODNAME4 = FIELD(@ROW4, "name")
+            SET @prodURL4 = FIELD(@ROW4, "url")
+            SET @prodSKU4 = FIELD(@ROW4, "sku")
+            SET @prodRecoLink4 = REPLACE(@prodURL4, @prodSKU4, @PRODID4)
+            SET @prodRecoImage4 = FIELD(@ROW4, "image_url")
+        ENDIF
+    ENDIF
+
+]%%
+
+
+<div class="darkmode" style="margin:0px auto;max-width:600px;background-color:#FFFFFF;">
+ <table align="center" border="0" cellpadding="0" cellspacing="0" class="darkmode dark-block" role="presentation" style="width:100%;">
+  
+   <tr>
+    <td style="width:50%;" width="50%">
+     <a alias="Manual-product-picker-1-%%=v(@PRODNAME1)=%%" href="%%=redirectto(@prodRecoLink1)=%%" target="_blank"><img height="auto" src="%%=v(@prodRecoImage1)=%%" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="300"> </a></td><td style="width:50%;" width="50%">
+     <a alias="Manual-product-picker-1-%%=v(@PRODNAME2)=%%" href="%%=redirectto(@prodRecoLink2)=%%" target="_blank"><img height="auto" src="%%=v(@prodRecoImage2)=%%" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="300"> </a></td></tr><tr>
+    <td>
+     <a alias="Manual-product-picker-1-%%=v(@PRODNAME3)=%%" href="%%=redirectto(@prodRecoLink3)=%%" target="_blank"><img height="auto" src="%%=v(@prodRecoImage3)=%%" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="300"> </a></td><td>
+     <a alias="Manual-product-picker-1-%%=v(@PRODNAME4)=%%" href="%%=redirectto(@prodRecoLink4)=%%" target="_blank"><img height="auto" src="%%=v(@prodRecoImage4)=%%" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="300"> </a>
+    </td>
+   </tr>
+ </table>
+</div>
+<!--[if mso | IE]>
+</td>
+</tr>
+</table>
+<![endif]-->
