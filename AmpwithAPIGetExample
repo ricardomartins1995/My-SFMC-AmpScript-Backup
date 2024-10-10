@@ -1,0 +1,159 @@
+%%[/* Control - Labels & content blocks */]%%
+%%[
+
+SET @ConfigDE2 = "Abandoned Basket Configuration - mail 1" /* Set template dataextension with values to retrieve */
+IF NOT EMPTY (AttributeValue("ID")) THEN
+    SET @SubscriberKey2 = AttributeValue("ID")
+ELSE
+    SET @SubscriberKey2 = AttributeValue("SubscriberKey")
+ENDIF
+
+SET @DE2 = LookupOrderedRows('showContentBlock', 1, "EventDate Desc", 'SubscriberKey',@SubscriberKey2)
+SET @RCount = rowcount(@DE2)
+
+IF @RCount > 0 THEN
+
+    SET @row2 = row(@DE2,1)
+    SET @AuthenticatedId2 = Field(@row2,"AuthenticatedId")
+    SET @TemporaryId2 = Field(@row2, "TemporaryId")
+    SET @Email2 = Field(@row2,"Email")
+    SET @culture2 = Field(@row2, "Culture")
+
+    
+    SET @FirstName2 = LookUp('MasterSubscribers','FirstName','ID',@SubscriberKey2)   
+    SET @LastName2 = LookUp('MasterSubscribers','LastName','ID',@SubscriberKey2)   
+    
+    set @rows2 = LookupRows(@ConfigDE2,"a", "a") 
+    set @rowCount2 = rowcount(@rows2) 
+                                                    
+    for @counter2 = 1 to @rowCount2 do
+        set @row3 = row(@rows2, @counter2) 
+        set @attributeName2 = field(@row3,"attributename")
+        set @attributeValue2 = Lookup(@ConfigDE2,@culture2,"attributename", @attributeName2)
+]%%
+
+<script runat="server">
+    Platform.Load('Core', '1');
+    Variable.SetValue('@' + Variable.GetValue("@attributeName2"), Variable.GetValue("@attributeValue2"));
+    </script>
+    <script runat="server" language="ampscript">
+    next
+</script>
+
+%%[                                                                            
+    /* Get content blocks */
+
+    SET @DE3 = LookupOrderedRows("LabelTranslationsAbandonedCart_ContentBlock",1,"CB_ID","CB_Culture",@culture2)
+    SET @rc3 = RowCount(@DE3)
+
+    IF @rc3 > 0 THEN
+        SET @r3= row(@DE3,1)
+        SET @ProductFeed2 = Field(@r3, "CB_ProductFeed")
+        SET @ProdH = Field(@r3, "CB_Headline")
+        SET @ProductHeader2 = CONCAT("Hey ", @FirstName2, " ", @ProdH)
+    ENDIF   
+
+    /*Hent basketXML*/
+    SET @BasketXML2 = HTTPGet(Concat("https://cdn.relewise.com/sosg-6ECE2315-FA53-42EA-9B81-1D0605A50432/production/GetUser?authenticatedId=",@AuthenticatedId2,"&temporaryId=",@TemporaryId2,"&salesforceId=",@SubscriberKey2,"&email=",@Email2,"&culture=",@culture2))             
+
+    /*Hent data fra basketXML*/  
+
+    IF ROWCOUNT(BuildRowSetFromXML(@BasketXML2, "Response/Carts/Cart/Id", 0)) > 0 THEN 
+        SET @CartID2 = Field(Row(BuildRowSetFromXML(@BasketXML2, "Response/Carts/Cart/Id", 0), 1), "Value")
+    ELSE
+        RAISEERROR('TOM KURV','True')
+    ENDIF
+    
+
+    /*henter Produkter fra basketxml*/                                            
+    SET @productRows2 = BuildRowSetFromXML(@BasketXML2, "Response/Carts/Cart/Lines/CartLine", 0)
+
+    /* Control - Product Lines */
+
+    for @j2 = 1 to 1 do 
+        SET @Error2 = '1'
+        SET @param2 = '' 
+        SET @productXML2 = Concat("<product>", Field(Row(@productRows2, @j2), "XML"), "</product>") 
+        SET @productId2 = Trim(Field(Row(BuildRowSetFromXML(@productXML2, "/product/VariantId", 0), 1), "Value"))  
+        SET @productQty2 = Trim(Field(Row(BuildRowSetFromXML(@productXML2, "/product/Quantity", 0), 1), "Value"))  
+        SET @productTitle2 = Lookup(@ProductFeed2,'title','Id',@productId2)
+        SET @productPrice2 = Replace(Lookup(@ProductFeed2,'price','Id',@productId2),'.',',')
+        SET @productDescriptionText2 = Lookup(@ProductFeed2,'description','Id',@productId2)
+        SET @productDescription2= iif(length(@productDescriptionText2) > 100, concat(substring(@productDescriptionText2,1,97),"..."), @productDescriptionText2)                                    
+        SET @productLink2 = Lookup(@ProductFeed2,'link','Id',@productId2) 
+        SET @productImage2 = Lookup(@ProductFeed2,'image','Id',@productId2)
+        SET @param2 = concat(@param2, '&productAndVariantId=',@productId2) 
+
+        IF NOT EMPTY(@productTitle2) THEN 
+            SET @Error2 = 0
+        ENDIF
+]%%
+
+    <table>
+        <tr align="center" >
+            <th colspan="3">
+                %%=v(@ProductHeader2)=%%<br>
+            </th>
+        </tr>
+        <tr>
+            <td align="left">
+                <img src="%%=v(@productImage2)=%%" width="100px" height="100px">
+            </td>
+            <td align="center">
+                %%=v(@productTitle2)=%% <br>
+                %%=v(@productDescription2)=%%<br>
+                %%=v(@productPrice2)=%%
+            </td>
+            <td align="right">
+                %%[
+                    IF RowCount(@productRows2) == 1 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/fd00810f-11e5-46f6-acb5-d811af055bcc.png'
+                    ELSEIF RowCount(@productRows2) == 2 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/c5ec4eac-1ae6-438e-8683-0a38ce227f3c.png'
+                    ELSEIF RowCount(@productRows2) == 3 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/efcae376-8a3b-4af4-9d6f-35b7fffa2054.png'
+                    ELSEIF RowCount(@productRows2) == 4 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/c0e6f61d-d10d-4cb9-8066-776a70717377.png'
+                    ELSEIF RowCount(@productRows2) == 5 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/4e6342df-e300-4400-b3a9-3886b38702a2.png'
+                    ELSEIF RowCount(@productRows2) == 6 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/44a775d1-5523-4e32-9722-dd8c5dab0862.png'
+                    ELSEIF RowCount(@productRows2) == 7 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/f0172565-2157-4c50-8ec4-decb1834ee2d.png'
+                    ELSEIF RowCount(@productRows2) == 8 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/2b31cf3d-b0c6-491a-b159-13f2c7228a6c.png'
+                    ELSEIF RowCount(@productRows2) == 9 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/bc23e51c-8303-49b1-9ca0-7850e721a429.png'
+                    ELSEIF RowCount(@productRows2) == 10 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/194a9391-75c2-4942-ae13-9e41e7ffde48.png'
+                    ELSEIF RowCount(@productRows2) > 10 THEN
+                        SET @ProductIMGCount = 'https://image.mail.sostrenegrene.com/lib/fe33117075640474741079/m/1/e5c18ee8-82d2-4135-a6bc-50abccc28d7c.png'
+                    Endif
+                ]%%
+                <img src="%%=v(@ProductIMGCount)=%%" width="100px" height="100px">
+            </td>
+        </tr>
+    </table>
+
+%%[   
+    NEXT @j2
+        IF @Error2 == '1' THEN 
+            RaiseError('Ingen produkter','True')
+        ENDIF  
+]%%
+            
+%%[
+    ELSE
+]%%
+        <table>
+            <tr align="center" >
+                <th>
+                    <p align="center">
+                        Subscriber dont exist in Abandoned Cart Database
+                    </p>
+                </th>
+            </tr>
+        </table>
+%%[    
+ENDIF
+]%%
