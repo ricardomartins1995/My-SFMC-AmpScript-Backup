@@ -1,0 +1,38 @@
+<script runat="server" language="ampscript">
+SET @ARRAYTREND = ''
+SET @ARRAYBEST = ''
+FOR @CNT=1 TO 8 DO
+    SET @FIELDSET1 = TreatAsContent(CONCAT('%','%[SET @TREND',@CNT,' = LOOKUP(@ProductFeed,"Trending","ID",@productId',@CNT,')]%','%'))
+    SET @FIELDSET2 = TreatAsContent(CONCAT('%','%[SET @BEST',@CNT,' = LOOKUP(@ProductFeed,"Bestseller","ID",@productId',@CNT,')]%','%'))
+    IF @CNT < 8 THEN    
+        SET @ARRAY1CNT = TreatAsContent(CONCAT('%','%[SET @ARRAYTREND = CONCAT(@ARRAYTREND, @TREND',@CNT,',"/")]%','%'))
+        SET @ARRAY2CNT = TreatAsContent(CONCAT('%','%[SET @ARRAYBEST = CONCAT(@ARRAYBEST, @BEST',@CNT,',"/")]%','%'))
+    ELSE
+        SET @ARRAY1CNT = TreatAsContent(CONCAT('%','%[SET @ARRAYTREND = CONCAT(@ARRAYTREND, @TREND',@CNT,')]%','%'))
+        SET @ARRAY2CNT = TreatAsContent(CONCAT('%','%[SET @ARRAYBEST = CONCAT(@ARRAYBEST, @BEST',@CNT,')]%','%'))
+    ENDIF
+NEXT @CNT
+
+SET @ARRAYTREND2 = BuildRowsetFromString(@ARRAYTREND,"/")  
+SET @ARRAYTRENDCOUNT = ROWCOUNT(@ARRAYTREND2)
+SET @ARRAYBEST2 = BuildRowsetFromString(@ARRAYBEST,"/")  
+SET @ARRAYBESTCOUNT = ROWCOUNT(@ARRAYBEST2)
+
+FOR @CNT2 = 1 TO 8 DO
+    SET @TEMPBGCOLOR = TreatAsContent(CONCAT('%','%[SET @BGCOLOR',@CNT2,'= "NULL"]%','%'))
+    SET @ROWTREND = ROW(@ARRAYTREND2, @CNT2)
+    SET @ROWBEST = ROW(@ARRAYBEST2, @CNT2)
+
+    SET @TEMPTREND = FIELD(@ROWTREND, 1)
+    SET @TEMPBEST = FIELD(@ROWBEST, 1)
+
+    IF (@TEMPTREND == 'True' AND @TEMPBEST == 'True') OR (@TEMPTREND == 'True' AND @TEMPBEST == 'False') THEN
+        SET @FIELDSET3 = TreatAsContent(CONCAT('%','%[SET @FLAGVALUE',@CNT2,'= LOOKUP("Reco-Block_trending&bestseller_Filter", @culture, "attributename","Trending")]%','%'))
+        SET @FIELDSET4 = TreatAsContent(CONCAT('%','%[SET @BGCOLOR',@CNT2,'= "#F6F3E8"]%','%'))
+    ELSEIF @TEMPBEST == 'True' AND @TEMPTREND == 'False' THEN
+        SET @FIELDSET3 = TreatAsContent(CONCAT('%','%[SET @FLAGVALUE',@CNT2,'= LOOKUP("Reco-Block_trending&bestseller_Filter", @culture, "attributename","Bestseller")]%','%'))
+        SET @FIELDSET4 = TreatAsContent(CONCAT('%','%[SET @BGCOLOR',@CNT2,'= "#F6F3E8"]%','%'))
+    ENDIF
+NEXT @CNT2
+
+</script>

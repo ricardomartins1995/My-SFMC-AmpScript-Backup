@@ -1,0 +1,295 @@
+%%[/* Control - Relewise - Recently Viewed Products */]%%
+<script runat="server" language="ampscript">
+VAR @productId1, @productId2, @productId3, @productId4, @productId5, @productId6, @productId7, @productId8, @count, @CatId, @type, @Alias, @ShowAdditionalImageIfAvailable, @LookupImageString, @FallbackImageString, @LookupAdditionalImageString,@ProductRecoBlocktype, @EmailName, @SubscriberKey, @CurrentTime, @today
+
+  /* KAN ÆNDRES */
+SET @count = '6' /* Antal produkter der kommer retur fra Relewise */
+SET @CatId = '' /*Her sættes kategorien*/ 
+SET @ShowAdditionalImageIfAvailable = true
+SET @FallbackImageString = 'image'
+SET @LookupAdditionalImageString = 'additional image'
+SET @ProductRecoBlocktype = 'Recently Viewed Products'  /* Manual Product Input, Popular most products viewed etc. */  
+SET @BoostByMargin = '0' /* 0 svarer til at der ikke gives et boost, og 5 giver det højeste boost */  
+SET @BuryByClaim = '0' /* 0 svarer til at der ikke gives en bury (negativ boost), og 5 giver den højeste bury */
+SET @BoostByCartOpener = '0' /* 0 svarer til at der ikke gives et boost, og 5 giver det højeste boost */
+SET @MaxDropCode = ''
+  /* KAN ÆNDRES */
+  
+  /* MÅ IKKE ÆNDRES */
+SET @ConfigDE = "Reco-Blokke - Configuration" /* Set template dataextension with values to retrieve */
+SET @RelewiseCulture = AttributeValue('Culture')
+SET @CountryCodeSC = AttributeValue('Contact:Country_Code__c')
+SET @LanguageCodeSC = AttributeValue('Contact:Language_Code__c')
+SET @LanguageCodeDE = AttributeValue('LanguageCode')
+SET @CountryCodeDE = AttributeValue('CountryCode')
+SET @Type = 'RecentlyViewedProducts' 
+SET @Alias = @Type  
+
+SET @EmailName = emailName_
+SET @SubscriberKey = _subscriberkey
+Set @today = Now()
+SET @CurrentTime = SystemDateToLocalDate(@today)   
+  
+IF EMPTY(@RelewiseCulture) and EMPTY (@CountryCodeSC) THEN SET @Culture = Concat(@LanguageCodeDE,'-',@CountryCodeDE) 
+ELSEIF EMPTY(@RelewiseCulture) and EMPTY (@CountryCodeDE) THEN SET @Culture = Concat(@LanguageCodeSC,'-',@CountryCodeSC)
+ELSE SET @Culture = @RelewiseCulture
+ENDIF
+
+/* Get content blocks */
+
+IF @culture == "da-DK" THEN
+SET @ProductFeed = 'ProductFeed-DK'
+  
+ELSEIF @culture == "de-DE" THEN
+SET @ProductFeed = 'ProductFeed-DE'  
+  
+ELSEIF @culture == "nl-NL" THEN
+SET @ProductFeed = 'ProductFeed-NL' 
+  
+ELSEIF @culture == "sv-SE" THEN
+SET @ProductFeed = 'ProductFeed-SE'
+  
+ELSEIF @culture == "fr-FR" THEN
+SET @ProductFeed = 'ProductFeed-FR'
+  
+ELSEIF @culture == "nb-NO" THEN
+SET @ProductFeed = 'ProductFeed-NO'  
+  
+ELSEIF @culture == "de-AT" THEN
+SET @ProductFeed = 'ProductFeed-AT'  
+  
+ELSEIF @culture == "en-GB" THEN
+SET @ProductFeed = 'ProductFeed-GB'  
+  
+ELSEIF @culture == "en-IE" THEN
+SET @ProductFeed = 'ProductFeed-IE'  
+  
+ELSEIF @culture == "fr-BE" THEN
+SET @ProductFeed = 'ProductFeed-BE-fr'  
+  
+ELSEIF @culture == "nl-BE" THEN
+SET @ProductFeed = 'ProductFeed-BE-nl'  
+  
+ELSEIF @culture == "fr-CH" THEN
+SET @ProductFeed = 'ProductFeed-CH-fr'  
+  
+ELSEIF @culture == "de-CH" THEN
+SET @ProductFeed = 'ProductFeed-CH-de'  
+
+ENDIF
+
+set @rows = LookupRows(@ConfigDE,"a", "a") 
+set @rowCount = rowcount(@rows) 
+                                                 
+for @counter = 1 to @rowCount do
+set @row = row(@rows, @counter) 
+set @attributeName = field(@row,"attributename")
+set @attributeValue = Lookup(@ConfigDE,@culture,"attributename", @attributeName)
+</script>
+
+<script runat="server">
+Platform.Load('Core', '1');
+ Variable.SetValue('@' + Variable.GetValue("@attributeName"), Variable.GetValue("@attributeValue"));
+</script>
+<script runat="server" language="ampscript">
+next
+</script>
+
+<script runat="server" language="ampscript">
+
+
+/*Hent recommendationXML*/
+IF EMPTY(@CatId) THEN SET @RequestUrl = Concat("https://cdn.relewise.com/sosg-6ECE2315-FA53-42EA-9B81-1D0605A50432/production/GetRecommendations?email=",emailaddr,"&salesforceId=",_subscriberkey,"&type=",@Type,"&culture=",@Culture,"&count=",@Count,"&BoostByMargin=",@BoostByMargin,"&BuryByClaim=",@BuryByClaim,"&BoostByCartOpener=",@BoostByCartOpener,"&MaxDropCode=",@MaxDropCode)
+ELSE SET @RequestUrl = Concat("https://cdn.relewise.com/sosg-6ECE2315-FA53-42EA-9B81-1D0605A50432/production/GetRecommendations?email=",emailaddr,"&salesforceId=",_subscriberkey,"&type=",@Type,"&culture=",@Culture,"&count=",@Count,"&categoryId=",@CatId,"&BoostByMargin=",@BoostByMargin,"&BuryByClaim=",@BuryByClaim,"&BoostByCartOpener=",@BoostByCartOpener,"&MaxDropCode=",@MaxDropCode) 
+ENDIF  
+
+
+SET @RecoXML = HTTPGet(@RequestUrl)             
+  
+/*henter Produkter fra Recoxml*/                                            
+SET @productRows = BuildRowSetFromXML(@RecoXML, "Response/Recommendations/Recommendation", 0)
+                                      
+                                      
+
+for @j = 1 to RowCount(@productRows) do 
+  SET @productXML = Concat("<product>", Field(Row(@productRows, @j), "XML"), "</product>") 
+
+  IF rowcount(BuildRowSetFromXML(@productXML,"/product/VariantId", 0)) > 0 THEN  /*Check om Relewise sender variantId med*/
+    SET @productId = Trim(Field(Row(BuildRowSetFromXML(@productXML,"/product/VariantId", 0), 1),"Value"))
+    ELSE  /*Hvis ikke Relewise kender variantId bruger vi productid til at lave lookup i productfeed*/
+    SET @productId = Lookup(@ProductFeed,'ID','item group id',Trim(Field(Row(BuildRowSetFromXML(@productXML,"/product/ProductId", 0), 1),"Value")))
+  ENDIF                      
+                           
+  IF rowcount(lookuprows(@ProductFeed,'ID',@productId)) > 0 THEN 
+
+        IF empty(@productId1) THEN SET @productId1 = @ProductId
+        ELSEIF empty(@productId2) THEN SET @productId2 = @ProductId
+        ELSEIF empty(@productId3) THEN SET @productId3 = @ProductId
+        ELSEIF empty(@productId4) THEN SET @productId4 = @ProductId 
+        ELSEIF empty(@productId5) THEN SET @productId5 = @ProductId          
+        ELSEIF empty(@productId6) THEN SET @productId6 = @ProductId 
+        ELSEIF empty(@productId7) THEN SET @productId7 = @ProductId 
+        ELSEIF empty(@productId8) THEN SET @productId8 = @ProductId 
+        ENDIF
+
+    ELSE
+        InsertDE("empty_productrecs_log","SubscriberKey",@SubscriberKey,"RecProductId",@productId,"RecProductXML",@productXML,"ProductRecoBlocktype",@ProductRecoBlocktype,"EmailName",@EmailName,"Timestamp",@CurrentTime)
+    
+  ENDIF
+  
+  
+</script>
+
+
+<script runat="server" language="ampscript">
+  NEXT @j
+</script>
+
+<script runat="server" language="ampscript">
+  
+/* Set which image to lookup */
+
+IF @ShowAdditionalImageIfAvailable THEN 
+  SET @LookupImageString = @LookupAdditionalImageString
+ELSE 
+  SET @LookupImageString = @FallbackImageString
+ENDIF
+
+/* Set productdata to display - product 1 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId1)) THEN 
+  SET @productImage1 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId1)
+ELSE 
+  SET @productImage1 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId1)
+ENDIF
+SET @productLink1 = Lookup(@ProductFeed,'link','ID',@productId1)
+SET @productTitle1 = Lookup(@ProductFeed,'title','ID',@productId1)
+SET @productPrice1 = replace(Lookup(@ProductFeed,'price','ID',@productId1),".",",")
+
+/* Set productdata to display - product 2 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId2)) THEN 
+  SET @productImage2 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId2)
+ELSE 
+  SET @productImage2 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId2)
+ENDIF
+SET @productLink2 = Lookup(@ProductFeed,'link','ID',@productId2)
+SET @productTitle2 = Lookup(@ProductFeed,'title','ID',@productId2)
+SET @productPrice2 = replace(Lookup(@ProductFeed,'price','ID',@productId2),".",",")
+
+/* Set productdata to display - product 3 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId3)) THEN 
+  SET @productImage3 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId3)
+ELSE 
+  SET @productImage3 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId3)
+ENDIF
+SET @productLink3 = Lookup(@ProductFeed,'link','ID',@productId3)
+SET @productTitle3 = Lookup(@ProductFeed,'title','ID',@productId3)
+SET @productPrice3 = replace(Lookup(@ProductFeed,'price','ID',@productId3),".",",")
+
+/* Set productdata to display - product 4 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId4)) THEN 
+  SET @productImage4 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId4)
+ELSE 
+  SET @productImage4 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId4)
+ENDIF
+SET @productLink4 = Lookup(@ProductFeed,'link','ID',@productId4)
+SET @productTitle4 = Lookup(@ProductFeed,'title','ID',@productId4)
+SET @productPrice4 = replace(Lookup(@ProductFeed,'price','ID',@productId4),".",",")
+
+/* Set productdata to display - product 5 */                             
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId5)) THEN 
+  SET @productImage5 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId5)
+ELSE 
+  SET @productImage5 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId5)
+ENDIF
+SET @productLink5 = Lookup(@ProductFeed,'link','ID',@productId5)
+SET @productTitle5 = Lookup(@ProductFeed,'title','ID',@productId5)
+SET @productPrice5 = replace(Lookup(@ProductFeed,'price','ID',@productId5),".",",")
+
+/* Set productdata to display - product 6 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId6)) THEN 
+  SET @productImage6 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId6)
+ELSE 
+  SET @productImage6 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId6)
+ENDIF
+SET @productLink6 = Lookup(@ProductFeed,'link','ID',@productId6)
+SET @productTitle6 = Lookup(@ProductFeed,'title','ID',@productId6)
+SET @productPrice6 = replace(Lookup(@ProductFeed,'price','ID',@productId6),".",",")
+
+/* Set productdata to display - product 7 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId7)) THEN 
+  SET @productImage7 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId7)
+ELSE 
+  SET @productImage7 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId7)
+ENDIF
+SET @productLink7 = Lookup(@ProductFeed,'link','ID',@productId7)
+SET @productTitle7 = Lookup(@ProductFeed,'title','ID',@productId7)
+SET @productPrice7 = replace(Lookup(@ProductFeed,'price','ID',@productId7),".",",")
+
+/* Set productdata to display - product 8 */
+IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId8)) THEN 
+  SET @productImage8 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId8)
+ELSE 
+  SET @productImage8 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId8)
+ENDIF
+SET @productLink8 = Lookup(@ProductFeed,'link','ID',@productId8)
+SET @productTitle8 = Lookup(@ProductFeed,'title','ID',@productId8)
+SET @productPrice8 = replace(Lookup(@ProductFeed,'price','ID',@productId8),".",",")
+
+  /* MÅ IKKE ÆNDRES */
+
+  </script>
+
+  <script runat="server" language="ampscript">  
+  /*GET variantId*/
+   SET @DEVARID = LookupOrderedRows('Product Interest Trigger', 1, 'Timestamp DESC', 'SubscriberKey', @SubscriberKey)
+   SET @RCOUNTDE = ROWCOUNT(@DEVARID)
+   IF @RCOUNTDE > 0 THEN
+      FOR @Z = 1 to @RCOUNTDE DO
+         SET @rowDEVARID = row(@DEVARID, 1)   
+         SET @variantId = FIELD(@rowDEVARID, 'VariantId')
+      NEXT @Z
+   ENDIF
+  /*GET ADDITIONAL IMAGE FOR LAYOUT X1*/
+   SET @additionalImage1 = Lookup(@ProductFeed,'additional image','Id',@variantId)
+   IF @additionalImage1 == @productImage1 THEN
+      SET @additionalImage1 = Lookup(@ProductFeed,'image','Id',@variantId)
+   ENDIF
+
+   SET @CT = 0
+   FOR @l=1 to 8 do   
+      SET @tempImg = TreatAsContent(CONCAT('%','%[SET @tempValue = @productImage', @l,']%', '%'))
+      IF NOT EMPTY(@tempValue) THEN
+         SET @CT = ADD(@CT, 1)
+      ENDIF
+   NEXT @l
+
+   IF @CT == 1 THEN
+      IF Not Empty(@additionalImage1) > 0 THEN
+         SET @CBID = 313678
+      ELSE
+         SET @CBID = 314639
+      ENDIF
+
+  </script>
+      %%=ContentBlockbyId(@CBID)=%%
+  <script runat="server" language="ampscript"> 
+  
+  ELSEIF @CT == 2 THEN
+    SET @CBID = 313676
+    </script>
+      %%=ContentBlockbyId(@CBID)=%%
+    <script runat="server" language="ampscript"> 
+
+  ELSEIF @CT == 3 THEN
+    SET @CBID = 313681
+    </script>
+      %%=ContentBlockbyId(@CBID)=%%
+    <script runat="server" language="ampscript"> 
+    
+  ELSEIF @CT >= 4 THEN
+    SET @CBID = 314084
+    </script>
+      %%=ContentBlockbyId(@CBID)=%%
+    <script runat="server" language="ampscript"> 
+  ENDIF
+  </script>

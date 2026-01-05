@@ -1,0 +1,179 @@
+%%[/* Control - Relewise - 2x2 Favorites Product Input*/]%%
+<script runat="server" language="ampscript">
+VAR @productId1, @productId2, @productId3, @productId4, @count, @CatId, @type, @Alias, @ShowAdditionalImageIfAvailable, @LookupImageString, @FallbackImageString, @LookupAdditionalImageString,@ProductRecoBlocktype, @EmailName, @SubscriberKey, @CurrentTime, @today
+
+  /* KAN ÆNDRES */
+SET @SK = AttributeValue('SubscriberKey')
+SET @DE1 = LookupOrderedRows('Favorites', 10, 'FavoriteCreationDate DESC', 'ContactKey', @SK, 'Status', 'add')
+SET @RCOUNT = ROWCOUNT(@DE1)
+
+IF @RCOUNT > 0 THEN
+
+  SET @ShowAdditionalImageIfAvailable = true
+  SET @FallbackImageString = 'image'
+  SET @LookupAdditionalImageString = 'additional image'
+  SET @ProductRecoBlocktype = 'Manual Product Input - Packshot'  /* Manual Product Input, Popular most products viewed etc. */
+    /* KAN ÆNDRES */
+    
+    /* MÅ IKKE ÆNDRES */
+  SET @ConfigDE = "Reco-Blokke - Configuration" /* Set template dataextension with values to retrieve */
+  SET @RelewiseCulture = AttributeValue('Culture')
+  SET @CountryCodeSC = AttributeValue('Contact:Country_Code__c')
+  SET @LanguageCodeSC = AttributeValue('Contact:Language_Code__c')
+  SET @LanguageCodeDE = AttributeValue('LanguageCode')
+  SET @CountryCodeDE = AttributeValue('CountryCode')
+  SET @Type = 'SpecificProducts'
+  SET @Alias = @Type  
+
+  SET @EmailName = emailName_
+  SET @SubscriberKey = _subscriberkey
+  Set @today = Now()
+  SET @CurrentTime = SystemDateToLocalDate(@today)    
+    
+  IF EMPTY(@RelewiseCulture) and EMPTY (@CountryCodeSC) THEN SET @Culture = Concat(@LanguageCodeDE,'-',@CountryCodeDE) 
+  ELSEIF EMPTY(@RelewiseCulture) and EMPTY (@CountryCodeDE) THEN SET @Culture = Concat(@LanguageCodeSC,'-',@CountryCodeSC)
+  ELSE SET @Culture = @RelewiseCulture
+  ENDIF
+
+  /* Get content blocks */
+
+  IF @culture == "da-DK" THEN
+  SET @ProductFeed = 'ProductFeed-DK'
+    
+  ELSEIF @culture == "de-DE" THEN
+  SET @ProductFeed = 'ProductFeed-DE'  
+    
+  ELSEIF @culture == "nl-NL" THEN
+  SET @ProductFeed = 'ProductFeed-NL' 
+    
+  ELSEIF @culture == "sv-SE" THEN
+  SET @ProductFeed = 'ProductFeed-SE'
+    
+  ELSEIF @culture == "fr-FR" THEN
+  SET @ProductFeed = 'ProductFeed-FR'
+    
+  ELSEIF @culture == "nb-NO" THEN
+  SET @ProductFeed = 'ProductFeed-NO'  
+    
+  ELSEIF @culture == "de-AT" THEN
+  SET @ProductFeed = 'ProductFeed-AT'  
+    
+  ELSEIF @culture == "en-GB" THEN
+  SET @ProductFeed = 'ProductFeed-GB'  
+    
+  ELSEIF @culture == "en-IE" THEN
+  SET @ProductFeed = 'ProductFeed-IE'  
+    
+  ELSEIF @culture == "fr-BE" THEN
+  SET @ProductFeed = 'ProductFeed-BE-fr'  
+    
+  ELSEIF @culture == "nl-BE" THEN
+  SET @ProductFeed = 'ProductFeed-BE-nl'  
+    
+  ELSEIF @culture == "fr-CH" THEN
+  SET @ProductFeed = 'ProductFeed-CH-fr'  
+    
+  ELSEIF @culture == "de-CH" THEN
+  SET @ProductFeed = 'ProductFeed-CH-de'  
+
+  ENDIF
+
+  set @rows = LookupRows(@ConfigDE,"a", "a") 
+  set @rowCount = rowcount(@rows) 
+                                                  
+  for @counter = 1 to @rowCount do
+  set @row = row(@rows, @counter) 
+  set @attributeName = field(@row,"attributename")
+  set @attributeValue = Lookup(@ConfigDE,@culture,"attributename", @attributeName)
+  </script>
+
+  <script runat="server">
+  Platform.Load('Core', '1');
+  Variable.SetValue('@' + Variable.GetValue("@attributeName"), Variable.GetValue("@attributeValue"));
+  </script>
+  <script runat="server" language="ampscript">
+  next
+  </script>
+
+  <script runat="server" language="ampscript">
+  SET @ARRAY = ''
+  FOR @I=1 TO @RCOUNT DO
+    SET @ROW1 = ROW(@DE1, @I)
+    SET @FieldSet = TreatAsContent(CONCAT('%','%[SET @ItemID', @I, ' = Field(@ROW1,"Id")]%', '%'))
+  NEXT @i
+ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID1)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID1, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID2)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID2, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID3)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID3, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID4)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID4, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID5)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID5, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID6)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID6, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID7)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID7, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID8)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID8, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID9)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID9, '/') ENDIF
+IF rowcount(lookuprows(@ProductFeed,'ID',@ItemID10)) > 0 THEN SET @ARRAY = CONCAT(@ARRAY, @ItemID10, '/') ENDIF
+
+SET @ARRAY2 = BuildRowsetFromString(@ARRAY,"/")  
+SET @ARRAYCOUNT = ROWCOUNT(@ARRAY2)
+SET @ARRAYCOUNT2 = Subtract(@ARRAYCOUNT,1) 
+
+IF @ARRAYCOUNT2 >= 4 THEN
+  for @J = 1 TO @ARRAYCOUNT2 DO
+    set @ROW2 = row(@ARRAY2, @J) /* get row based on counter */
+    SET @FieldSet2 = TreatAsContent(CONCAT('%','%[SET @productId', @J, ' = Field(@ROW2,1)]%', '%'))
+  NEXT @J
+    
+  /* Set which image to lookup */
+  IF @ShowAdditionalImageIfAvailable THEN 
+    SET @LookupImageString = @LookupAdditionalImageString
+  ELSE 
+    SET @LookupImageString = @FallbackImageString
+  ENDIF
+
+  /* Set productdata to display - product 1 */
+  IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId1)) THEN 
+    SET @productImage1 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId1)
+  ELSE 
+    SET @productImage1 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId1)
+  ENDIF
+  SET @productLink1 = Lookup(@ProductFeed,'link','ID',@productId1)
+  SET @productTitle1 = Lookup(@ProductFeed,'title','ID',@productId1)
+  SET @productPrice1 = replace(Lookup(@ProductFeed,'price','ID',@productId1),".",",")
+
+  /* Set productdata to display - product 2 */
+  IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId2)) THEN 
+    SET @productImage2 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId2)
+  ELSE 
+    SET @productImage2 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId2)
+  ENDIF
+  SET @productLink2 = Lookup(@ProductFeed,'link','ID',@productId2)
+  SET @productTitle2 = Lookup(@ProductFeed,'title','ID',@productId2)
+  SET @productPrice2 = replace(Lookup(@ProductFeed,'price','ID',@productId2),".",",")
+
+  /* Set productdata to display - product 3 */
+  IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId3)) THEN 
+    SET @productImage3 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId3)
+  ELSE 
+    SET @productImage3 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId3)
+  ENDIF
+  SET @productLink3 = Lookup(@ProductFeed,'link','ID',@productId3)
+  SET @productTitle3 = Lookup(@ProductFeed,'title','ID',@productId3)
+  SET @productPrice3 = replace(Lookup(@ProductFeed,'price','ID',@productId3),".",",")
+
+  /* Set productdata to display - product 4 */
+  IF EMPTY(Lookup(@ProductFeed,@LookupImageString,'ID',@productId4)) THEN 
+    SET @productImage4 = Lookup(@ProductFeed,@FallbackImageString,'ID',@productId4)
+  ELSE 
+    SET @productImage4 = Lookup(@ProductFeed,@LookupImageString,'ID',@productId4)
+  ENDIF
+  SET @productLink4 = Lookup(@ProductFeed,'link','ID',@productId4)
+  SET @productTitle4 = Lookup(@ProductFeed,'title','ID',@productId4)
+  SET @productPrice4 = replace(Lookup(@ProductFeed,'price','ID',@productId4),".",",")
+  /* MÅ IKKE ÆNDRES */  
+</script>
+
+  %%=ContentBlockbyId('329388')=%%
+
+<script runat="server" language="ampscript">
+  ENDIF
+</script>

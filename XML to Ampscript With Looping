@@ -1,0 +1,525 @@
+
+%%[
+    VAR @subKey
+    SET @subKey = _subscriberkey
+    VAR @orderXML
+    SET @orderXML = XML_Order
+    /* ORDER DETAILS START */
+    VAR @orderDetailsPath
+    SET @orderDetailsPath = "/OrderViewModel/"
+    VAR @orderNumber, @email, @created, @transactionId, @deliveryMethodText, @comment, @linesTotalPrice, @totalPrice, @totalVatAmount, @deliveryFee, @linesTotalRebate, @linesTotalBeforePrice, @paymentTypeFee, @showPaymentFee, @giftCards, @giftCardAmount, @paymentType, @currency, @hasBeenTracked, @voucherBalance
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "OrderNumber"))) > 0 THEN
+        SET @orderNumber = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "OrderNumber"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Email"))) > 0 THEN
+        SET @email = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Email"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Created"))) > 0 THEN
+        SET @created = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Created"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TransactionId"))) > 0 THEN
+        SET @transactionId = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TransactionId"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "DeliveryMethodText"))) > 0 THEN
+        SET @deliveryMethodText = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "DeliveryMethodText"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Comment"))) > 0 THEN
+        SET @comment = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Comment"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalPrice"))) > 0 THEN
+        SET @linesTotalPrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalPrice"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TotalPrice"))) > 0 THEN
+        SET @totalPrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TotalPrice"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TotalVatAmount"))) > 0 THEN
+        SET @totalVatAmount = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "TotalVatAmount"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "DeliveryFee"))) > 0 THEN
+        SET @deliveryFee = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "DeliveryFee"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalRebate"))) > 0 THEN
+        SET @linesTotalRebate = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalRebate"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalBeforePrice"))) > 0 THEN
+        SET @linesTotalBeforePrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "LinesTotalBeforePrice"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "PaymentTypeFee"))) > 0 THEN
+        SET @paymentTypeFee = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "PaymentTypeFee"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "ShowPaymentFee"))) > 0 THEN
+        SET @showPaymentFee = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "ShowPaymentFee"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "GiftCards"))) > 0 THEN
+        SET @giftCards = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "GiftCards"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "GiftCardAmount"))) > 0 THEN
+        SET @giftCardAmount = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "GiftCardAmount"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "PaymentType"))) > 0 THEN
+        SET @paymentType = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "PaymentType"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Currency"))) > 0 THEN
+        SET @currency = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "Currency"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "HasBeenTracked"))) > 0 THEN
+        SET @hasBeenTracked = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "HasBeenTracked"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "VoucherBalance"))) > 0 THEN
+        SET @voucherBalance = Field(Row(BuildRowsetFromXML(@orderXML, concat(@orderDetailsPath, "VoucherBalance"), 0), 1), 'Value')
+    ENDIF
+    /* ORDER DETAILS END */
+    /* */
+    /* */
+    /* INVOICE ADDRESS START */
+    /* variables start with i_ for invoice */
+    VAR @invoiceAddressPath
+    SET @invoiceAddressPath = "/OrderViewModel/InvoiceAddress/"
+    VAR @i_city, @i_country, @i_countryCode, @i_firstname, @i_lastname, @i_line1, @i_phone, @i_zipcode
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "City"))) > 0 THEN
+        SET @i_city = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "City"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Country"))) > 0 THEN
+        SET @i_country = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Country"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "CountryCode"))) > 0 THEN
+        SET @i_countryCode = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "CountryCode"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Firstname"))) > 0 THEN
+        SET @i_firstname = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Firstname"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Lastname"))) > 0 THEN
+        SET @i_lastname = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Lastname"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Line1"))) > 0 THEN
+        SET @i_line1 = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Line1"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Phone"))) > 0 THEN
+        SET @i_phone = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Phone"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Zipcode"))) > 0 THEN
+        SET @i_zipcode = Field(Row(BuildRowsetFromXML(@orderXML, concat(@invoiceAddressPath, "Zipcode"), 0), 1), 'Value')
+    ENDIF
+    /* INVOICE ADDRESS END */
+    /* */
+    /* */
+    /* DELIVERY ADDRESS START */
+    /* variables start with d_ for delivery */
+    VAR @deliveryAddressPath
+    SET @deliveryAddressPath = "/OrderViewModel/DeliveryAddress/"
+    VAR @d_city, @d_company, @d_country, @d_firstname, @d_lastname, @d_line1, @d_zipcode
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "City"))) > 0 THEN
+        SET @d_city = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "City"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Company"))) > 0 THEN
+        SET @d_company = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Company"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Country"))) > 0 THEN
+        SET @d_country = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Country"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Firstname"))) > 0 THEN
+        SET @d_firstname = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Firstname"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Lastname"))) > 0 THEN
+        SET @d_lastname = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Lastname"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Line1"))) > 0 THEN
+        SET @d_line1 = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Line1"), 0), 1), 'Value')
+    ENDIF
+    IF rowcount(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Zipcode"))) > 0 THEN
+        SET @d_zipcode = Field(Row(BuildRowsetFromXML(@orderXML, concat(@deliveryAddressPath, "Zipcode"), 0), 1), 'Value')
+    ENDIF
+    /* DELIVERY ADDRESS END */
+    /* */
+    /* */
+    /* ORDER LINES START */
+    VAR @orderLinesNodes
+    SET @orderLinesNodes = BuildRowSetFromXML(@orderXML, "/OrderViewModel/OrderLines/OrderLineViewModel", 1)
+    VAR @lineCount
+    SET @lineCount = RowCount(@orderLinesNodes)
+]%%
+<!--Begin: Order summary info-->
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td class="hBorderDark" style="border-collapse: collapse; height: 0px; width: 100%; border-top: 1px solid #999999; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+</table>
+<table align="left" bgcolor="#FFFFFF" border="0" cellpadding="8" cellspacing="0" class="summary" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td style="border-collapse: collapse;">
+            <table align="left" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="summaryText" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 22px;" width="100%">
+
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                    </td>
+                    <td style="border-collapse: collapse;">
+                    </td>
+                </tr>
+                <tr>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                        Ordrenummer</td>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@orderNumber)=%%</td>
+                </tr>
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                        Dato</td>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(FormatDate(@created, 'dd.MM.YYYY'))=%%</td>
+                </tr>
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                        Kommentar</td>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@comment)=%%</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="margin" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 0px; line-height: 0px; width: 100%; clear: both;" width="100%">
+</table>
+<!--End: Order summary info-->
+%%[
+    FOR @I = 1 TO @LINECOUNT DO
+        VAR @linePath
+        SET @linePath = concat("/OrderViewModel/OrderLines/OrderLineViewModel[", @i, "]/")
+        VAR @categoryText, @size, @totalLinePrice, @totalLineBeforePrice, @currency, @brandText, @count, @skuId, @imageUrl, @productName, @unitPrice, @styleId, @categoryId, @categoryName
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryText"))) > 0 THEN
+            SET @categoryText = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryText"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "Size"))) > 0 THEN
+            SET @size = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "Size"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "TotalLinePrice"))) > 0 THEN
+            SET @totalLinePrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "TotalLinePrice"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "TotalLineBeforePrice"))) > 0 THEN
+            SET @totalLineBeforePrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "TotalLineBeforePrice"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "Currency"))) > 0 THEN
+            SET @currency = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "Currency"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "BrandText"))) > 0 THEN
+            SET @brandText = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "BrandText"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "Count"))) > 0 THEN
+            SET @count = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "Count"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "SkuId"))) > 0 THEN
+            SET @skuId = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "SkuId"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "ImageUrl"))) > 0 THEN
+            SET @imageUrl = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "ImageUrl"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "ProductName"))) > 0 THEN
+            SET @productName = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "ProductName"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "UnitPrice"))) > 0 THEN
+            SET @unitPrice = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "UnitPrice"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "StyleId"))) > 0 THEN
+            SET @styleId = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "StyleId"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryId"))) > 0 THEN
+            SET @categoryId = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryId"), 0), 1), 'Value')
+        ENDIF
+        IF rowcount(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryName"))) > 0 THEN
+            SET @categoryName = Field(Row(BuildRowsetFromXML(@orderXML, concat(@linePath, "CategoryName"), 0), 1), 'Value')
+        ENDIF
+]%%
+<!--Begin: Order summery products-->
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="8" cellspacing="0" class="summaryProductsDesktop" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 18px;" width="100%">
+
+    <tr>
+        <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; font-weight: bold;" valign="top">
+            &nbsp;</td>
+        <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; font-weight: bold; " valign="top">
+            <strong>Beskrivelse</strong>
+        </td>
+        <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; font-weight: bold;" valign="top">
+            <strong>Antal</strong>
+        </td>
+        <td align="left" class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; font-weight: bold;" valign="top">
+            <strong>Total pris</strong>
+        </td>
+    </tr>
+    <tr>
+        <td class="margin" colspan="5" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" colspan="5" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="img" style="border-collapse: collapse; width: 120px;" valign="top" width="100">
+            <a alias="GetTitle(orderLine.SkuId)" href="httpgetwrap|KaufContext.GetSkuUrl(orderLine.SkuId)" title="GetTitle(orderLine.SkuId)"><img alias="GetTitle(orderLine.SkuId)" alt="" height="141" src="%%=v(@imageUrl)=%%" style="display: block; max-width: 100%; border: 0; outline: 0; width: 100px; height: 141px;" title="GetTitle(orderLine.SkuId)" width="100"> </a>
+        </td>
+        <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+            %%=v(@brandText)=%%<br>
+            %%=v(@categoryName)=%%<br>
+            orderLine.Color<br>
+            %%=v(@size)=%%<br>
+            %%=v(@skuId)=%%<br>
+            <br>
+        </td>
+        <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+            %%=v(@count)=%%</td>
+        <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+            %%=v(@totalLinePrice)=%%<br>
+            <span class="oldPrice" style="color: #999999; text-decoration: line-through; display: block;">
+                %%=v(@totalLineBeforePrice)=%% </span>
+        </td>
+    </tr>
+    <tr>
+        <td class="margin" colspan="5" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" colspan="5" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+            &nbsp;</td>
+    </tr>
+</table>
+<!--End: Order summary products-->
+    %%[
+    NEXT @I @I
+    /* ORDER LINES END  */
+    ]%%
+<!--Begin: Summary total-->
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td class="hBorderDark" style="border-collapse: collapse; height: 0px; width: 100%; border-top: 1px solid #999999; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0;">
+            &nbsp;</td>
+    </tr>
+</table>
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="8" cellspacing="0" class="summary" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td style="border-collapse: collapse;">
+            <table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="summaryTotal" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 22px;" width="100%">
+
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Total pris</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@totalPrice)=%%
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Din rabat</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@linesTotalRebate)=%%</td>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Levering</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@deliveryFee)=%%</td>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Rabatkupon</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@voucherBalance)=%%
+                    </td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px; color: #626262;">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px; color: #626262;">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px; color: #626262;">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td align="left" class="total" style="border-collapse: collapse; color: #000000; font-weight: bold;">
+                        Total pris</td>
+                    <td align="right" class="total" style="border-collapse: collapse; color: #000000; font-weight: bold;">
+                        %%=v(@totalPrice)=%%
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" class="vat" style="border-collapse: collapse; color: #626262; font-style: italic;">
+                        Moms i alt</td>
+                    <td align="right" class="vat" style="border-collapse: collapse; color: #626262; font-style: italic;">
+                        %%=v(@totalVatAmount)=%%</td>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Gavekort</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@giftCardAmount)=%%</td>
+                </tr>
+                <tr>
+                    <td align="left" style="border-collapse: collapse; color: #626262;">
+                        Til betaling</td>
+                    <td align="right" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@totalPrice)=%%
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="hBorderDark" style="border-collapse: collapse; height: 0px; width: 100%; border-top: 1px solid #999999; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+</table>
+<!--End: Summary total-->
+<!--Start: Customer info-->
+<table align="left" bgcolor="#FFFFFF" border="0" cellpadding="8" cellspacing="0" class="summary" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td style="border-collapse: collapse;">
+            <table align="left" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="summaryText" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 22px;" width="100%">
+
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                    </td>
+                    <td style="border-collapse: collapse;">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border-collapse: collapse;">
+                        <h3 style="margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 13px; font-weight: bold;">
+                            Dine oplysninger</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@i_firstName)=%% %%=v(@i_lastName)=%%</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@i_line1)=%%
+                        <br>
+                        %%=v(@i_zipcode)=%% %%=v(@i_city)=%%<br>
+                        %%=v(@i_country)=%%
+                    </td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@i_phone)=%%</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;">
+                        %%=v(@email)=%%</td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;">
+                        &nbsp;</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<!--End: Customer info-->
+<!--Begin: Delivery info-->
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td class="hBorderDark" style="border-collapse: collapse; height: 0px; width: 100%; border-top: 1px solid #999999; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+</table>
+<table align="left" bgcolor="#FFFFFF" border="0" cellpadding="8" cellspacing="0" class="summary" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td style="border-collapse: collapse;">
+            <table align="left" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" class="summaryText" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 22px;" width="100%">
+
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                    </td>
+                    <td style="border-collapse: collapse;">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="border-collapse: collapse;" valign="top">
+                        <h3 style="margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 13px; font-weight: bold;">
+                            Levering</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="margin" colspan="2" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" valign="top">
+                        &nbsp;</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@d_firstName)=%% %%=v(@d_lastName)=%%</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@d_company)=%%</td>
+                </tr>
+                <tr>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@d_line1)=%%<br>
+                        %%=v(@d_zipcode)=%% %%=v(@d_city)=%%<br>
+                        %%=v(@d_country)=%%</td>
+                </tr>
+                <tr>
+                    <td class="label" style="border-collapse: collapse; font-family: Raleway, Verdana, Sans-Serif; color: #000000; width: 136px;" valign="top" width="136">
+                        Leveringstype</td>
+                    <td class="value" style="border-collapse: collapse; color: #626262;" valign="top">
+                        %%=v(@deliveryMethodText)=%%</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+</table>
+<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="border-spacing: 0; border-collapse: collapse;   background: #FFFFFF; font-family: Raleway, Verdana, Sans-Serif; font-size: 13px; line-height: 16px;" width="100%">
+
+    <tr>
+        <td class="hBorderDark" style="border-collapse: collapse; height: 0px; width: 100%; border-top: 1px solid #999999; margin-left: 0; margin-right: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0;">
+            &nbsp;</td>
+    </tr>
+    <tr>
+        <td class="margin" height="8" style="border-collapse: collapse; height: 8px; min-width: 8px; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; font-size: 0px; line-height: 0px;" width="100%">
+            &nbsp;</td>
+    </tr>
+</table>
+<!--End: Delivery info-->

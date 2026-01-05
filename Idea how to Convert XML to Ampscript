@@ -1,0 +1,78 @@
+<table align="center" width="600" style="border-collapse: collapse;">
+
+<script runat="server" language="ampscript">
+SET @SK = AttributeValue('SubscriberKey')
+SET @EMAIL = AttributeValue('EmailAddress')
+SET @XML = AttributeValue('XML_order')
+
+SET @XML = Replace(@XML,"<?xml version='1.0'?>",'')
+SET @XML = ConCat("<?xml version='1.0'?><root>",@XML,'</root>')
+Set @rowsetArrayOfProducts = BuildRowsetFromXML(@XML, '//OrderLines', 1)
+Set @rowsetProductName = BuildRowsetFromXML(@XML, '//ProductName', 1)
+Set @rowsetProductImage = BuildRowsetFromXML(@XML, '//ImageUrl', 1)
+Set @rowsetProductQuantity = BuildRowsetFromXML(@XML, '//Count', 1)
+Set @rowsetProductPrice = BuildRowsetFromXML(@XML, '//UnitPrice', 1)
+set @rowsetProductCategory = BuildRowsetFromXML(@XML, '//CategoryName')
+
+
+for @i = 1 to Rowcount(@rowsetArrayOfProducts) do
+
+
+if (Rowcount(@rowsetProductName) >= @i) then
+    Set @Product_Name = Field(Row(@rowsetProductName,@i),1) 
+  else 
+    set @Product_Name = ''
+  endif
+
+if (Rowcount(@rowsetProductImage) >= @i) then
+    Set @Product_Image = Field(Row(@rowsetProductImage,@i),1) 
+  else 
+    set @Product_Image = ''
+  endif
+
+if (Rowcount(@rowsetProductQuantity) >= @i) then
+    Set @Product_Quantity = Field(Row(@rowsetProductQuantity,@i),1) 
+  else 
+    set @Product_Quantity = ''
+  endif
+
+if (Rowcount(@rowsetProductPrice) >= @i) then
+    Set @Product_Price = Field(Row(@rowsetProductPrice,@i),1) 
+  else 
+    set @Product_Price = @rowsetProductPrice
+  endif
+
+if (rowcount(@rowsetProductCategory) >= @i) then
+    set @Product_Category = field(row(@rowsetProductCategory,@i),1)
+  else
+    set @Product_Category = ''
+  endif
+
+</script>                                              
+
+<tr>
+        <td align="center">
+            <img src="%%=v(@Product_Image)=%%" alt="%%=v(@Product_Name)=%%" style="display: block; max-width: 300px; max-height: 200px; width: auto; height: auto;" />
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="font-size: 24px; font-weight: bold;">
+            %%=ProperCase(@Product_Name)=%% 
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="font-size: 18px; color: #555;">
+            %%=v(@Product_Category)=%%
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="font-size: 20px; color: #333;">
+            DKK %%=v(@Product_Price)=%%
+        </td>
+    </tr>
+
+<script runat="server" language="ampscript">
+    Next @i
+</script>
+
+</table>

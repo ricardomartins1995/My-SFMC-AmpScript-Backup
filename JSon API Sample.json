@@ -1,0 +1,19 @@
+{
+	"definitionKey": "TEST_KaufmannForgottenPasswordDK",
+	"recipient": {
+		"contactKey": "test1_ricardo.silva@impactcommerce.pt",
+		"to": "ricardo.silva@impactcommerce.pt",
+		"attributes": {
+			"SubscriberKey": "test1_ricardo.silva@impactcommerce.pt",
+			"EmailAddress": "ricardo.silva@impactcommerce.pt",
+			"FirstName": "Ricardo",
+			"LastName": "Silva Test",
+			"OrderNumber": "189000334455",
+			"GiftcardNumber": "1234098765",
+			"GiftcardPassword": "**********0099",
+            "GiftcardAmount": "18.99",
+            "GiftcardCurrency": "EUR",
+            "Expire": "05/30/2025"
+		}
+	}
+}

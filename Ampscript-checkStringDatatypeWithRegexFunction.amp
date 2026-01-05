@@ -1,0 +1,43 @@
+%%[
+    var @field1,@NumberRegEx,@TextRegEx,@RegExMatchNum,@RegExMatchTxt,@output
+
+    /*@field must be used to enter a value that you want to check*/
+    set @field = '1236'
+
+    /*You can use these values to execute some test:
+    '73257078804052'
+    '1000261-971'
+    'mens-knitwear'
+    '052mens-knitwear'
+    'Text'
+    */ 
+
+    /*@NumberRegEx will be used as a pattern for number only string*/
+    set @NumberRegEx= '^[0-9]+$'
+
+    /*@TextRegEx will be used as a pattern for text only string*/
+    set @TextRegEx = '^[a-zA-Z]+$'
+
+    /*just for test purposes: 
+    set @AlphaNumRegEx = '([a-zA-Z0-9._%+-]+)'
+    set @RegExMatchAlphaNum = RegExMatch(@field,@AlphaNumRegEx, 0, "IgnoreCase")*/
+
+    /*Verify if the string is a text only or Number only*/
+    set @RegExMatchNum = RegExMatch(@field,@NumberRegEx, 0, "IgnoreCase")
+    set @RegExMatchTxt = RegExMatch(@field,@TextRegEx, 0, "IgnoreCase")
+
+    /*If Else statement to check which category the string belongs to*/
+    if Length(@RegExMatchTxt) > 0 then
+        set @output = Concat('This is a Text only String with the value: ',@RegExMatchTxt)
+    elseif Length(@RegExMatchNum) > 0 then
+        set @output = Concat('This is a Number only String with the value: ',@RegExMatchNum)
+    Else
+        set @output = Concat('This is an Alphanumeric String with the value: ',@field)
+    Endif
+
+]%%
+<p>
+  Result = %%=v(@output)=%%<br>
+  RegExMatchNum = %%=v(@RegExMatchNum)=%%<br>
+  RegExMatchTxt = %%=v(@RegExMatchTxt)=%%<br>
+</p>

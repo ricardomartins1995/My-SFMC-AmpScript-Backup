@@ -1,0 +1,67 @@
+%%[ /* voucher code kaufmann – SAFE */ ]%%
+%%[
+VAR @id, @campaign, @baseURI, @secret, @requestURI, @voucher,
+    @expirationDays, @voucherValue, @submit_time, @expiration
+
+SET @id = Id
+IF EMPTY(@id) THEN SET @id = _subscriberkey ENDIF
+
+SET @campaign = "vip"
+
+/* Config */
+SET @baseURI = "https://tradelink.kaufmann.dk/api/voucher/"
+SET @secret  = "/qwgvsyjnvdswgscvjywegbcdxeewggwrunvweasfvczseth"
+SET @requestURI = Concat(@baseURI, @campaign, @secret)
+
+
+
+/* Verifica campanha antes de chamar a API */
+IF RowCount(LookupRows("VoucherData","Campaign",@campaign)) == 0 THEN
+  SET @voucher = "KODE-GENERERES-I-BUTIKKEN"
+  GOTO end_voucher
+ENDIF
+]%%
+
+<script runat="server">
+Platform.Load("core","1");
+var url = Variable.GetValue("@requestURI");
+var sc = 0, resp = "";
+try {
+  var r = HTTP.Post(url, "application/json", "{}");
+  sc = r["StatusCode"];
+  resp = r["Response"];
+} catch(e) {
+  sc = 0;
+  resp = String(e); // timeout/conn refused/etc
+}
+Variable.SetValue("httpStatus", sc);
+Variable.SetValue("httpResponse", resp);
+</script>
+
+%%[
+/* Trata resposta e garante fallback */
+SET @httpStatus   = AttributeValue("httpStatus")
+SET @httpResponse = AttributeValue("httpResponse")
+
+IF @httpStatus == 200 AND NOT EMPTY(@httpResponse) THEN
+  /* Mantém tua lógica de parsing */
+  SET @voucher1 = Replace(Replace(Replace(@httpResponse, @campaign, ""), "-", ""), Char(34), "")
+  SET @voucher  = Replace(@httpResponse, Char(34), "")
+  /* Metadados e persistência */
+  SET @expirationDays = Lookup("VoucherData","ExpirationDays","Campaign",@campaign)
+  SET @voucherValue   = Lookup("VoucherData","VoucherValue","Campaign",@campaign)
+  SET @submit_time    = SystemDateToLocalDate(Now(1))
+  SET @expiration     = DateAdd(@submit_time, @expirationDays, "D")
+
+  InsertDE("VoucherClaimed",
+    "Id", @id, "VoucherID", @voucher, "Claimed", 1,
+    "ClaimedDate", @submit_time, "ExpirationDate", @expiration,
+    "VoucherValue", @voucherValue, "Campaign", @campaign)
+ELSE
+  SET @voucher = "KODE-GENERERES-I-BUTIKKEN"
+  /* Opcional: logar falha em uma DE de erros
+     InsertDE("VoucherErrors","Id",@id,"Campaign",@campaign,"Status",@httpStatus,"Msg",@httpResponse,"When", Now(1))
+  */
+ENDIF
+
+]%%
