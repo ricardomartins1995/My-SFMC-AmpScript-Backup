@@ -1,0 +1,152 @@
+<table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="min-width: 100%; " class="stylingblock-content-wrapper">
+   <tr>
+      <td style="padding: 0px 10px 0px 10px; " class="stylingblock-content-wrapper camarker-inner">
+         <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+            <tr>
+               <td>
+                  <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                     <tr>
+                        <td valign="top" class="responsive-td" style="width: 100%; padding-bottom: 0px;">
+                           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="min-width: 100%; " class="stylingblock-content-wrapper">
+                              <tr>
+                                 <td class="stylingblock-content-wrapper camarker-inner">
+                                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                       <tr>
+                                          <td style="padding: 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                             <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                                                <tr>
+                                                   <td>
+                                                      <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                                                         <tr>
+                                                            <td valign="top" style="width: 50%; padding-right: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                     <td class="stylingblock-content-wrapper camarker-inner">
+                                                                        <table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+                                                                           <tr>
+                                                                              <td align="center"><a href="%%=RedirectTo(@productLink1)=%%" title="%%=v(@ProductTitle1)=%%" alias="Reco-%%=v(@Alias)=%%-prod1" conversion="true" data-linkto="https://"><img data-assetid="" src="%%=v(@productImage1)=%%" class="tableBlock" alt="" width="150" height="200" style="display: block; padding: 0px; text-align: center; border: 0px; width:150px; height: 200px"></a></td>
+                                                                           </tr>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                            <td valign="top" style="width: 50%; padding-left: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                     <td class="stylingblock-content-wrapper camarker-inner">
+                                                                        <table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+                                                                           <tr>
+                                                                               <td align="center"><a href="%%=RedirectTo(@productLink2)=%%" title="%%=v(@ProductTitle2)=%%" alias="Reco-%%=v(@Alias)=%%-prod2" conversion="true" data-linkto="https://"><img data-assetid="" src="%%=v(@productImage2)=%%" alt="" class="tableBlock" width="150" height="200" style="display: block; padding: 0px; text-align: center; border: 0px; width:150px; height: 200px"></a></td>
+                                                                           </tr>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                         </tr>
+                                                      </table>
+                                                   </td>
+                                                </tr>
+                                             </table>
+                                          </td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+            <tr>
+               <td>
+                  <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                     <tr>
+                        <td valign="top" class="responsive-td" style="width: 100%;">
+                           <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="min-width: 100%; " class="stylingblock-content-wrapper">
+                              <tr>
+                                 <td class="stylingblock-content-wrapper camarker-inner">
+                                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                       <tr>
+                                          <td style="padding: 10px 0px 0px 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                             <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                                                <tr>
+                                                   <td>
+                                                      <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                                                         <tr>
+                                                            <td valign="top" style="width: 50%; padding-right: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                     <td style="padding: 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                                                        <div style="text-align: center; font-family:Arial,Helvetica,sans-serif; ">
+                                                                           %%=v(@ProductTitle1)=%%
+                                                                        </div>
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                            <td valign="top" style="width: 50%; padding-left: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                     <td style="padding: 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                                                        <div style="text-align: center; font-family:Arial,Helvetica,sans-serif; ">
+                                                                           %%=v(@ProductTitle2)=%%
+                                                                        </div>
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                         </tr>
+                                                      </table>
+                                                   </td>
+                                                </tr>
+                                               <tr>
+                                                   <td>
+                                                      <table cellspacing="0" cellpadding="0" role="presentation" style="width: 100%;">
+                                                         <tr>
+                                                            <td valign="top" style="width: 50%; padding-right: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                     <td style="text-align: center; padding: 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                                                        <div style="font-family:Arial,Helvetica,sans-serif; line-height:180%">
+                                                                           %%=v(@ProductPrice1)=%%<br></div>
+                                                                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper"><tr><td style="padding: 10px 0px 0px; " class="stylingblock-content-wrapper camarker-inner"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center"><table border="0" cellspacing="0" cellpadding="0"><tr><td class="innertd buttonblock" bgcolor="#504139" style=" border-radius: 0px; -moz-border-radius: 0px; -webkit-border-radius: 0px; color: #FFFFFF; background-color: #504139;"><a target="_blank" class="buttonstyles" style=" font-size: 15px; font-family: Trebuchet MS, sans-serif, canada-type-gibson; color: #FFFFFF; text-align: center; text-decoration: none; display: block; line-height: 100%; text-transform: uppercase; font-weight: 300; background-color: #504139; border: 1px solid #504139; padding: 10px 20px; border-radius: 0px; -moz-border-radius: 0px; -webkit-border-radius: 0px;" href="%%=RedirectTo(@productLink1)=%%" title="%%=v(@ProductTitle1)=%%" alias="Reco-%%=v(@Alias)=%%-prod1" conversion="false" data-linkto="other">%%=v(@RecoCTA)=%%</a></td></tr></table></td></tr></table></td></tr></table>
+                                                                        
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                            <td valign="top" style="width: 50%; padding-left: 5px;">
+                                                               <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper">
+                                                                  <tr>
+                                                                      <td style="text-align: center; padding: 0px; " class="stylingblock-content-wrapper camarker-inner">
+                                                                        <div style="font-family:Arial,Helvetica,sans-serif; line-height:180%">
+                                                                           %%=v(@ProductPrice2)=%%<br></div>
+                                                                        <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="background-color: transparent; min-width: 100%; " class="stylingblock-content-wrapper"><tr><td style="padding: 10px 0px 0px; " class="stylingblock-content-wrapper camarker-inner"><table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center"><table border="0" cellspacing="0" cellpadding="0"><tr><td class="innertd buttonblock" bgcolor="#504139" style=" border-radius: 0px; -moz-border-radius: 0px; -webkit-border-radius: 0px; color: #FFFFFF; background-color: #504139;"><a target="_blank" class="buttonstyles" style=" font-size: 15px; font-family: Trebuchet MS, sans-serif, canada-type-gibson; color: #FFFFFF; text-align: center; text-decoration: none; display: block; line-height: 100%; text-transform: uppercase; font-weight: 300; background-color: #504139; border: 1px solid #504139; padding: 10px 20px; border-radius: 0px; -moz-border-radius: 0px; -webkit-border-radius: 0px;" href="%%=RedirectTo(@productLink2)=%%" title="%%=v(@ProductTitle2)=%%" alias="Reco-%%=v(@Alias)=%%-prod2" conversion="false" data-linkto="other">%%=v(@RecoCTA)=%%</a></td></tr></table></td></tr></table></td></tr></table>
+                                                                        
+                                                                     </td>
+                                                                  </tr>
+                                                               </table>
+                                                            </td>
+                                                         </tr>
+                                                      </table>
+                                                   </td>
+                                                </tr>
+                                             </table>
+                                          </td>
+                                       </tr>
+                                    </table>
+                                 </td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+</table>
