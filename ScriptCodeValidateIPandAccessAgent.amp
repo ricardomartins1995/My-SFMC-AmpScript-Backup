@@ -1,0 +1,43 @@
+<script runat="server">
+    Platform.Load("Core", "1.1.1");
+
+    try {
+        // Captura o User Agent via SSJS (mais estável que AMPscript para isso)
+        var userAgent = Platform.Request.ReferrerURL; // Fallback simples
+        var headerUA = Platform.Request.GetRequestHeader("User-Agent");
+        
+        // Captura o IP diretamente (SSJS consegue ler o ClientIP em CloudPages)
+        var clientIP = Platform.Request.ClientIP();
+
+        // Passa os valores para variáveis AMPscript
+        Variable.SetValue("@ua", headerUA);
+        Variable.SetValue("@ip", clientIP);
+
+    } catch (e) {
+        // No Preview, ele cairá aqui e não travará a publicação
+        Variable.SetValue("@ua", "Preview Mode");
+        Variable.SetValue("@ip", "0.0.0.0");
+    }
+</script>
+
+%%[
+    /* Agora usamos AMPscript para gravar na DE */
+    SET @sk = AttributeValue("_subscriberkey")
+    
+    /* Só grava se não for o modo Preview para não sujar sua DE */
+    IF @ua != "Preview Mode" THEN
+        InsertDE(
+            "log_url_expired_links_landing_page",
+            "SubscriberKey", @sk,
+            "UserAgent", @ua,
+            "IP", @ip,
+            "DataAcesso", NOW()
+        )
+    ENDIF
+]%%
+
+<!-- Opcional: Mostrar na tela para você testar quando acessar a URL real -->
+<div style="display:none">
+    IP: %%=v(@ip)=%% <br>
+    UA: %%=v(@ua)=%%
+</div>
