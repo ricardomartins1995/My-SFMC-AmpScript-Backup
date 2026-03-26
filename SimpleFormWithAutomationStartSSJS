@@ -1,0 +1,110 @@
+<script runat="server">
+Platform.Load("Core", "1.1.1");
+
+var submitted = Platform.Request.GetFormField("submitted") || Platform.Request.GetQueryStringParameter("submitted");
+var eventId   = Platform.Request.GetFormField("eventId")   || Platform.Request.GetQueryStringParameter("eventId");
+
+if (submitted == "True" && eventId) {
+
+  /* GRAVAR NA DE */
+  var de = DataExtension.Init("tb03_EventID_Selection");
+  de.Rows.Remove(["EventID"], [eventId]);
+  de.Rows.Add({ EventID: eventId, ModifiedDate: Now() });
+
+  var automationCustomerKey = "StartAutomationWithSSJS";
+
+  var rr = Platform.Function.CreateObject("RetrieveRequest");
+  Platform.Function.SetObjectProperty(rr, "ObjectType", "Automation");
+  Platform.Function.AddObjectArrayItem(rr, "Properties", "ProgramID");
+  Platform.Function.AddObjectArrayItem(rr, "Properties", "CustomerKey");
+  Platform.Function.AddObjectArrayItem(rr, "Properties", "Status");
+
+  var sfp = Platform.Function.CreateObject("SimpleFilterPart");
+  Platform.Function.SetObjectProperty(sfp, "Property", "CustomerKey");
+  Platform.Function.SetObjectProperty(sfp, "SimpleOperator", "equals");
+  Platform.Function.AddObjectArrayItem(sfp, "Value", automationCustomerKey);
+  Platform.Function.SetObjectProperty(rr, "Filter", sfp);
+
+  var retrieveStatus = [0,0,0];
+  var automationResultSet = Platform.Function.InvokeRetrieve(rr, retrieveStatus);
+  var ObjectID = automationResultSet[0]["ObjectID"];
+  var Status   = automationResultSet[0]["Status"];
+
+  if (ObjectID != null && Status == 2) {
+    var obj = Platform.Function.CreateObject("Automation");
+    Platform.Function.SetObjectProperty(obj, "ObjectID", ObjectID);
+    var po = Platform.Function.CreateObject("PerformOptions");
+    var performResult = [0,0,0];
+    Platform.Function.InvokePerform(obj, "start", performResult, po);
+    Variable.SetValue("@sucesso", "true");
+    Variable.SetValue("@eventIdUsado", eventId);
+  } else {
+    Variable.SetValue("@erro", "Automação não está Ready. Status: " + Status);
+  }
+}
+</script>
+
+%%[
+IF RequestParameter("submitted") == "True" THEN
+  IF NOT EMPTY(@sucesso) THEN ]%%
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+      <tr>
+        <td align="center" valign="middle" style="padding: 60px 20px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#000000" style="border-radius: 10px; max-width: 400px;">
+            <tr>
+              <td style="padding: 40px 30px; text-align: center; color: #ffffff; font-family: Arial, sans-serif;">
+                <p style="font-size: 36px; margin: 0 0 12px;">&#10003;</p>
+                <p style="font-size: 20px; font-weight: bold; margin: 0 0 8px;">Automação iniciada!</p>
+                <p style="font-size: 14px; color: #aaaaaa; margin: 0;">Event ID: <strong style="color:#ffffff;">%%=v(@eventIdUsado)=%%</strong></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+%%[ ELSEIF NOT EMPTY(@erro) THEN ]%%
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+      <tr>
+        <td align="center" valign="middle" style="padding: 60px 20px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#000000" style="border-radius: 10px; max-width: 400px;">
+            <tr>
+              <td style="padding: 40px 30px; text-align: center; color: #ffffff; font-family: Arial, sans-serif;">
+                <p style="font-size: 36px; margin: 0 0 12px;">&#10007;</p>
+                <p style="font-size: 20px; font-weight: bold; margin: 0 0 8px;">Algo correu mal</p>
+                <p style="font-size: 12px; color: #ff6b6b; margin: 0;">%%=v(@erro)=%%</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+%%[ ENDIF ]%%
+%%[ ELSE ]%%
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+      <tr>
+        <td align="center" valign="middle" style="padding: 60px 20px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#000000" style="border-radius: 10px; max-width: 400px;">
+            <tr>
+              <td style="padding: 30px 30px;">
+                <form method="POST" action="%%=RequestParameter('PAGEURL')=%%">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="padding-bottom: 20px;">
+                        <input type="text" name="eventId" placeholder="Please input your Event ID" required="" style="width: 100%; padding: 18px; border-radius: 6px; border: none; font-size: 16px; box-sizing: border-box; outline: none; color: #333; font-family: Arial, sans-serif;">
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input type="hidden" name="submitted" value="True">
+                        <button type="submit" style="width: 100%; padding: 15px; border-radius: 6px; border: none; background-color: white; color: #000000; font-size: 18px; font-weight: bold; cursor: pointer; font-family: Arial, sans-serif;">Submit</button>
+                      </td>
+                    </tr>
+                  </table>
+                </form>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+%%[ ENDIF ]%%
